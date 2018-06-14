@@ -1,0 +1,31 @@
+{
+  "name": "rabbitmq",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "amqplib": "^0.5.2",
+    "app-root-path": "^2.0.1",
+    "bluebird": "^3.5.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "glup": "^1.0.14",
+    "gulp-typescript": "^4.0.2",
+    "http-errors": "~1.6.2",
+    "jade": "~1.11.0",
+    "merge2": "^1.2.1",
+    "morgan": "~1.9.0",
+    "uuid": "^3.2.1"
+  },
+  "description": "How to install and run nodejs with TypeScript code ==================================================",
+  "main": "dist/main.js",
+  "devDependencies": {
+    "@angular/cli": "^1.7.4",
+    "typescript": "^2.8.1"
+  },
+  "author": "Tsemach Mizrtachi",
+  "license": "ISC"
+}
