@@ -22,7 +22,7 @@ let options = {
 	}
 };
 
-amqp.connect('amqp://172.17.0.3').then(function(conn) {
+amqp.connect('amqp://localhost').then(function(conn) {
     return conn.createChannel().then(function(ch) {
         let ex = 'work.tasks.exchange';
         let ok = ch.assertExchange(ex, 'topic', {durable: false});
@@ -40,7 +40,7 @@ amqp.connect('amqp://172.17.0.3').then(function(conn) {
 }).catch(console.log);
 
 
-amqp.connect('amqp://172.17.0.3').then(function(conn) {
+amqp.connect('amqp://localhost').then(function(conn) {
     return conn.createChannel().then(function(ch) {
         let ex = 'work.events.exchange';
         let ok = ch.assertExchange(ex, 'topic', {durable: false});

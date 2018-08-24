@@ -105,7 +105,7 @@ class BrokerAsync {
     }
 
     async init() {
-        let conn = await amqp.connect('amqp://172.17.0.3');
+        let conn = await amqp.connect('amqp://localhost');
         this.ch = await conn.createChannel();
 
         try {
