@@ -1,10 +1,10 @@
 
 import { appRoot } from 'app-root-path';
-import Broker from '../../src/broker/broker';
+import Broker from '../../src/broker/broker-async';
 
 /**
  * @description this module run the broker as a Recevier. It define a configuration object listen to two queues,
- * work.tasks.queue and work.events.queue. this class is a wrapper around the broker waiting for messages come in
+ * work.tasks.queue and work.reply.queue. this class is a wrapper around the broker waiting for messages come in
  * from both queues and just displaying them on the console.
  *
  * The file broker_send_test.js: is responsible for send messages to those two queues.
@@ -28,15 +28,15 @@ let config: any = {
     },
     exchanges: [
         {name: "work.tasks.exchange", type: "topic", options: {publishTimeout: 1000, persistent: true, durable: false}},
-        {name: "work.events.exchange", type: "topic", options: {publishTimeout: 1000, persistent: true, durable: false}}
+        {name: "work.reply.exchange", type: "topic", options: {publishTimeout: 1000, persistent: true, durable: false}}
     ],
     queues: [
         {name: "work.tasks.queue", options: {limit: 1000, queueLimit: 1000}},
-        {name: "work.events.queue", options: {limit: 1000, queueLimit: 1000}}
+        {name: "work.reply.queue", options: {limit: 1000, queueLimit: 1000}}
     ],
     binding: [
         {exchange: "work.tasks.exchange", target: "work.tasks.queue", keys: "loopback.#"},
-        {exchange: "work.events.exchange", target: "work.events.queue", keys: "tsemach.#"}
+        {exchange: "work.reply.exchange", target: "work.reply.queue", keys: "tsemach.#"}
     ],
     logging: {
         adapters: {
@@ -56,7 +56,7 @@ class Receiver {
         this.ison = false;
         this.broker = new Broker(config);
         this.broker.addConsume("work.tasks.queue", this.taskCB.bind(this));
-        this.broker.addConsume("work.events.queue", this.eventsCB.bind(this));
+        this.broker.addConsume("work.reply.queue", this.replyCB.bind(this));
     }
 
     receive(ison) {
@@ -75,11 +75,11 @@ class Receiver {
         console.log("");
     }
 
-    eventsCB(msg) {
+    replyCB(msg) {
         if ( ! this.ison ) { return }
 
         msg.content = {data: "string", content: msg.content.toString()};
-        console.log("eventCB: [%s]: eventsCB %s:'%s'",
+        console.log("eventCB: [%s]: replyCB %s:'%s'",
             msg.properties.headers.messageId,
             msg.fields.routingKey,
             msg.content.toString());

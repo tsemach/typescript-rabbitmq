@@ -42,11 +42,11 @@ amqp.connect('amqp://localhost').then(function(conn) {
 
 amqp.connect('amqp://localhost').then(function(conn) {
     return conn.createChannel().then(function(ch) {
-        let ex = 'work.events.exchange';
+        let ex = 'work.reply.exchange';
         let ok = ch.assertExchange(ex, 'topic', {durable: false});
         return ok.then(function() {
 
-			key = 'tsemach.events';
+			key = 'tsemach.reply';
 			message = 'Hello World! from event queue';
             options.headers.source = ex + ":" + key;
 

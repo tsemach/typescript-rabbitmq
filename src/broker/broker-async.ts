@@ -1,7 +1,9 @@
 
+import createLogger from 'logging';
+const logger = createLogger('broker-async');
+
 import amqp = require('amqplib');
-//import Promise = require('bluebird');
-import uuid = require('uuid');
+import uuidv4 = require('uuid/v4');
 
 declare const Buffer;
 declare const process;
@@ -32,15 +34,15 @@ declare const process;
  *   },
  *   exchanges: [
  *       {name: "work.tasks.exchange", type: "topic", options: {publishTimeout: 1000, persistent: true, durable: false}},
- *       {name: "work.events.exchange", type: "topic", options: {publishTimeout: 1000, persistent: true, durable: false}}
+ *       {name: "work.reply.exchange", type: "topic", options: {publishTimeout: 1000, persistent: true, durable: false}}
  *   ],
  *   queues: [
  *       {name: "work.tasks.queue", options: {limit: 1000, queueLimit: 1000}},
- *       {name: "work.events.queue", options: {limit: 1000, queueLimit: 1000}}
+ *       {name: "work.reply.queue", options: {limit: 1000, queueLimit: 1000}}
  *   ],
  *   binding: [
  *       {exchange: "work.tasks.exchange", target: "work.tasks.queue", keys: "loopback.#"},
- *       {exchange: "work.events.exchange", target: "work.events.queue", keys: "tsemach.#"}
+ *       {exchange: "work.reply.exchange", target: "work.reply.queue", keys: "tsemach.#"}
  *   ],
  *   logging: {
  *       adapters: {
@@ -131,7 +133,7 @@ class BrokerAsync {
             contentEncoding: "utf-8",
             contentType: "application/json",
             headers: {
-                messageId: uuid.uuidv1(),
+                messageId: uuidv4(),
                 source: ex + ":" + key
             }
         };

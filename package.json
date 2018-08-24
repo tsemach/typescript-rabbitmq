@@ -26,11 +26,14 @@
   },
   "homepage": "https://github.com/tsemach/typescript-rabbitmq#readme",
   "dependencies": {
+    "@types/amqplib": "^0.5.8",
     "@types/assert": "0.0.31",
+    "@types/uuid": "^3.4.3",
     "amqplib": "^0.5.2",
     "app-root-path": "^2.1.0",
     "assert": "^1.4.1",
-    "logging": "^3.2.0"
+    "logging": "^3.2.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/chai": "^4.1.4",

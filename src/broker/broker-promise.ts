@@ -1,7 +1,7 @@
 
 import amqp = require('amqplib');
 import Promise = require('bluebird');
-import uuid = require('uuid');
+import uuidv4 = require('uuid/v4');
 
 declare const Buffer;
 declare const process;
@@ -109,7 +109,7 @@ class Broker {
             contentEncoding: "utf-8",
             contentType: "application/json",
             headers: {
-                messageId: uuid.uuidv1(),
+                messageId: uuidv4(),
                 source: ex + ":" + key
             }
         };
