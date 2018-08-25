@@ -11,17 +11,17 @@ npm install --save typescript-rabbitmq
 ````
 
 ##API
-- ##**Create**
+##**Create**
 **`let broker = new Broker(config);`**
 
 See below about the configuration
 
-- ##**Connect**
+##**Connect**
 **`broker = await this.broker.connect();`**
 
 This will connect to the rabbit server where the host:port defined in the config.
 
-- ##**Define Queues Callbacks**
+##**Define Queues Callbacks**
 Call to **addConsume** method to add queue callback, for example **`broker.addConsume("work.tasks.queue", (msg) => {..});`**
 
 #####Example of using the broker as a member of user class
