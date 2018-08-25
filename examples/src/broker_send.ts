@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import amqp = require('amqplib');
-import uuid = require('uuid');
+//import uuid = require('uuid');
 
 declare const Buffer;
 
@@ -39,14 +39,13 @@ amqp.connect('amqp://localhost').then(function(conn) {
     }).finally(function() { conn.close(); })
 }).catch(console.log);
 
-
 amqp.connect('amqp://localhost').then(function(conn) {
     return conn.createChannel().then(function(ch) {
-        let ex = 'work.events.exchange';
+        let ex = 'work.reply.exchange';
         let ok = ch.assertExchange(ex, 'topic', {durable: false});
         return ok.then(function() {
 
-			key = 'tsemach.events';
+			key = 'tsemach.reply';
 			message = 'Hello World! from event queue';
             options.headers.source = ex + ":" + key;
 

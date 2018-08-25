@@ -1,0 +1,26 @@
+{
+  "name": "examples",
+  "version": "0.0.1",
+  "description": "A set of examples using typescript-rabbitmq broker client\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tsemach/typescript-rabbitmq.git"
+  },
+  "keywords": [
+    "typescript-rabbitmq",
+    "rabbitmq"
+  ],
+  "author": "Tsemach Mizrachi <tsemach.mizrachi@gmail.com> (http://tsemach.github.io)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tsemach/typescript-rabbitmq/issues"
+  },
+  "homepage": "https://github.com/tsemach/typescript-rabbitmq#readme",
+  "dependencies": {
+    "typescript-rabbitmq": "file:../typescript-rabbitmq-0.0.1.tgz"
+  }
+}

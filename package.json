@@ -1,6 +1,6 @@
 {
   "name": "typescript-rabbitmq",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "A wrapper library for using rabbitmq under typescript",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -8,7 +8,8 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+		"build": "tsc",
+    "test": "tsc; mocha dist/tests/**/*.spec.js"
   },
   "repository": {
     "type": "git",
@@ -26,11 +27,14 @@
   },
   "homepage": "https://github.com/tsemach/typescript-rabbitmq#readme",
   "dependencies": {
+    "@types/amqplib": "^0.5.8",
     "@types/assert": "0.0.31",
+    "@types/uuid": "^3.4.3",
     "amqplib": "^0.5.2",
     "app-root-path": "^2.1.0",
     "assert": "^1.4.1",
-    "logging": "^3.2.0"
+    "logging": "^3.2.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/chai": "^4.1.4",
