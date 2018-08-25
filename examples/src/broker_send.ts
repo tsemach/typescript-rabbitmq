@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import amqp = require('amqplib');
-import uuid = require('uuid');
+//import uuid = require('uuid');
 
 declare const Buffer;
 
@@ -38,7 +38,6 @@ amqp.connect('amqp://localhost').then(function(conn) {
         });
     }).finally(function() { conn.close(); })
 }).catch(console.log);
-
 
 amqp.connect('amqp://localhost').then(function(conn) {
     return conn.createChannel().then(function(ch) {

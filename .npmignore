@@ -1,0 +1,15 @@
+node_modules/
+examples/
+*.log
+*.tgz
+.idea
+.vscode/
+src/
+tests/
+tsconfig.json
+tslint.json
+typings.json
+typings
+create-list.sh
+project.list
+dist/tests/
