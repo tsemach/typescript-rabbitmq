@@ -4,6 +4,8 @@
   "description": "A set of examples using typescript-rabbitmq broker client\"",
   "main": "index.js",
   "scripts": {
+    "receive": "node dist/broker_receive.js",
+    "send": "node dist/broker_send.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,6 +23,6 @@
   },
   "homepage": "https://github.com/tsemach/typescript-rabbitmq#readme",
   "dependencies": {
-    "typescript-rabbitmq": "file:../typescript-rabbitmq-0.0.1.tgz"
+    "typescript-rabbitmq": "file:../typescript-rabbitmq-0.0.3.tgz"
   }
 }

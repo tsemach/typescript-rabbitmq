@@ -1,15 +1,20 @@
 import createLogger from 'logging';
 import 'mocha';
-import {expect} from 'chai';
+import { expect } from 'chai';
+import { assert } from 'chai';
+
 import Broker from '../../src/broker/broker';
+import {BrokerExchangeOptions, BrokerQueueOptions} from "../../src";
 const exec = require('child_process').execFileSync;
 
-const logger = createLogger('Borker-Connect-Test');
+const logger = createLogger('Borker-Queue-Test');
 
-describe('Broker Connect Test', () => {
-  
+describe('Broker Exchange Test', () => {
+
   process.env.QUEUE_HOST = 'localhost';
   process.env.QUEUE_PORT = '5672';
+
+  //exec('docker', ['restart', 'rabbitmq'], {timeout: 10000, stdio: [0, 1, 2]});
 
   let config: any = {
     connection: {
@@ -55,26 +60,21 @@ describe('Broker Connect Test', () => {
   /**
    */
 
-  it('check broker connection', async () => {
+  it('check broker add queue (assertQueue', async () => {
 
     console.log(process.env.QUEUE_HOST + process.env.QUEUE_PORT);
     let broker = new Broker(config);
     await broker.connect();
-
-    expect(broker.conn).to.not.equal(null)
-  });
-
-  it('check broker connection events, reconnect', async (done) => {
-
-    console.log(process.env.QUEUE_HOST + process.env.QUEUE_PORT);
-    let broker = new Broker(config);
-
-    await broker.connect();
-
-    exec('docker', ['restart', 'rabbitmq'], {timeout: 10000, stdio: [0, 1, 2]});
 
     expect(broker.conn).to.not.equal(null);
-    done();
+
+    broker.addExchange('test', 'topic', {durable: false} as BrokerExchangeOptions);
+    let q = await broker.addQueue('testQ', {durable: true} as BrokerQueueOptions);
+
+    console.log("adding testQ: name = " + JSON.stringify(q));
+
+
+
   });
 
 });

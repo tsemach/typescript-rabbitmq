@@ -1,6 +1,7 @@
 
 import { appRoot } from 'app-root-path';
 import Broker from 'typescript-rabbitmq';
+//import { Broker } from '../../src/broker/broker';
 
 /**
  * @description this module run the broker as a Recevier. It define a configuration object listen to two queues,

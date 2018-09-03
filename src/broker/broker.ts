@@ -1,26 +1,13 @@
-///<reference path="../../node_modules/@types/node/index.d.ts"/>
-
 import createLogger from 'logging';
 const logger = createLogger('broker');
 
 import amqp = require('amqplib');
 import uuidv4 = require('uuid/v4');
 import {isUndefined} from "util";
+import {BrokerExchangeOptions, BrokerQueueOptions} from "./broker_options";
 
 declare const Buffer;
 declare const process;
-
-/**
- * @class class for using rabbitmq.
- *  using:
- *      broker = new Broker(config);
- *      broker.addTaskListener(queue-name, callback);
- *      broker.addEventListener(queue-name, callback);
- *
- *      callback(msg) {
- *          ...
- *      }
- */
 
 /**
  * example of config object:
@@ -59,8 +46,9 @@ declare const process;
  * @type {{connection: {user: any; pass: any; server: any; port: any; timeout: number; name: string}; exchanges: {name: string; type: string; options: {publishTimeout: number; persistent: boolean; durable: boolean}}[]; queues: {name: string; options: {limit: number; queueLimit: number}}[]; binding: {exchange: string; target: string; keys: string}[]; logging: {adapters: {stdOut: {level: number; bailIfDebug: boolean}}}}}
  */
 
-export class Broker {
+type BrokerExchangeType = 'fanout' | 'direct' | 'topic';
 
+export class Broker {
   private config: any;
   private _noAck = false;
   private _conn: any = null;
@@ -68,19 +56,23 @@ export class Broker {
   private consumes = new Map<string, any>();
 
   constructor(config: JSON) {
-      this.config = config;
+    this.config = config;
   }
 
   get noAck() {
-      return this._noAck;
+    return this._noAck;
   }
 
   set noAck(_noAck) {
-      this._noAck = _noAck;
+    this._noAck = _noAck;
   }
 
   get conn() {
     return this._conn;
+  }
+
+  get channel() {
+    return this.ch;
   }
 
   async connect() {
@@ -90,11 +82,11 @@ export class Broker {
       return;
     }
 
-    if ( ! this.config.connection.host ) {
+    if (!this.config.connection.host) {
       throw "rabbitMQ host name is undefined! unable to connect";
     }
 
-    if ( ! this.config.connection.port ) {
+    if (!this.config.connection.port) {
       this.config.connection.port = 5672;
     }
 
@@ -106,20 +98,20 @@ export class Broker {
       this.ch = await this._conn.createChannel();
 
       this._conn.on("error", (err) => {
-          this._conn = null;
-          if (err.message !== "connection closing") {
-            logger.error("[Broker-AMQP] conn error", err.message);
-          }
+        this._conn = null;
+        if (err.message !== "connection closing") {
+          logger.error("[Broker-AMQP] conn error", err.message);
+        }
       });
       this._conn.on("close", () => {
-          this._conn = null;
-          logger.error("[Brokeurlr-AMQP] reconnecting ..");
+        this._conn = null;
+        logger.error("[Brokeurlr-AMQP] reconnecting ..");
 
-          setTimeout(this.connect, 1000);
+        setTimeout(this.connect, 1000);
       });
       logger.info(`[connect] connected to ${this.config.connection.host}:${this.config.connection.port} is ok!`);
     }
-    catch(e) {
+    catch (e) {
       logger.info('ERROR! [connect] on trying to connection to ' + url);
       this._conn = null;
       setTimeout(this.connect, 1000);
@@ -131,11 +123,13 @@ export class Broker {
     await this.init();
   }
 
-  async initQueueCB(q_created) {
-    logger.info("initQueueCB: q = " +  JSON.stringify(q_created));
-    let needed_binding = this.config.binding.filter((b) => {if (b.target === q_created.queue) return b;});
+  private async initQueueCB(q_created) {
+    logger.info("initQueueCB: q = " + JSON.stringify(q_created));
+    let needed_binding = this.config.binding.filter((b) => {
+      if (b.target === q_created.queue) return b;
+    });
 
-    for(let b of needed_binding) {
+    for (let b of needed_binding) {
       logger.info("initQueueCB: bining - " + JSON.stringify(b));
 
       await this.ch.bindQueue(b.target, b.exchange, b.keys);
@@ -145,7 +139,7 @@ export class Broker {
     }
   }
 
-  async createQueue(q) {
+  private async createQueue(q) {
     logger.info("createQueue q = " + JSON.stringify(q));
     let theQ = await this.ch.assertQueue(q.name, q.options);
 
@@ -153,21 +147,33 @@ export class Broker {
   }
 
   async init() {
-    this.connect();
-    //this.conn = await amqp.connect('amqp://localhost');
-    //this.ch = await this.conn.createChannel();
+    await this.connect();
     try {
-      await Promise.all(this.config.exchanges.map((ex) => {this.ch.assertExchange(ex.name, ex.type, ex.options)}));
+      await Promise.all(this.config.exchanges.map((ex) => {
+        this.ch.assertExchange(ex.name, ex.type, ex.options)
+      }));
 
       logger.info("init exchanges ok");
     }
-    catch(e) {
+    catch (e) {
       logger.info(e);
     }
 
-    for(let v of this.config.queues) {
+    for (let v of this.config.queues) {
       await this.createQueue.bind(this)(v);
     }
+  }
+
+  async addExchange(name: string, type: BrokerExchangeType, options: BrokerExchangeOptions) {
+    this.config.exchanges.push({name, type, options});
+  }
+
+  async addQueue(name: string, options: BrokerQueueOptions) {
+    this.config.queues.push(name, options);
+  }
+
+  async addBinding(exchange, target, keys) {
+    this.config.binding.push({exchange: exchange, target: target, keys: keys});
   }
 
   send(ex, key, msg, options = null, noAck = true) {
