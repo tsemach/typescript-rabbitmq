@@ -64,17 +64,4 @@ describe('Broker Connect Test', () => {
     expect(broker.conn).to.not.equal(null)
   });
 
-  it('check broker connection events, reconnect', async (done) => {
-
-    console.log(process.env.QUEUE_HOST + process.env.QUEUE_PORT);
-    let broker = new Broker(config);
-
-    await broker.connect();
-
-    exec('docker', ['restart', 'rabbitmq'], {timeout: 10000, stdio: [0, 1, 2]});
-
-    expect(broker.conn).to.not.equal(null);
-    done();
-  });
-
 });

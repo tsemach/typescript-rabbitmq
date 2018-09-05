@@ -1,20 +1,17 @@
 import createLogger from 'logging';
+const logger = createLogger('Borker-Consume-Test');
+
 import 'mocha';
 import { expect } from 'chai';
 import { assert } from 'chai';
 
 import Broker from '../../src/broker/broker';
 import {BrokerExchangeOptions, BrokerQueueOptions} from "../../src";
-const exec = require('child_process').execFileSync;
 
-const logger = createLogger('Borker-Queue-Test');
-
-describe('Broker Queue Test', () => {
+describe('Broker Consume Test', () => {
 
   process.env.QUEUE_HOST = 'localhost';
   process.env.QUEUE_PORT = '5672';
-
-  //exec('docker', ['restart', 'rabbitmq'], {timeout: 10000, stdio: [0, 1, 2]});
 
   let config: any = {
     connection: {
@@ -54,22 +51,27 @@ describe('Broker Queue Test', () => {
   /**
    */
 
-  it('check broker add queue (assertQueue', async () => {
+  it('check broker add consume', async () => {
 
-    console.log(process.env.QUEUE_HOST + process.env.QUEUE_PORT);
+    async function testCB(msg) {
+      msg.content = msg.content.toString();
+      logger.info('[testCB] msg = ' + JSON.stringify(msg, undefined, 2));
+      expect(msg.content).to.be.equal('this is a test');
+      logger.info('[testCB] end running consume test');
+    }
+
+    console.log('host on: ' + process.env.QUEUE_HOST + ':' + process.env.QUEUE_PORT);
     let broker = new Broker(config);
     await broker.connect();
 
     expect(broker.conn).to.not.equal(null);
 
-    broker.addExchange('test', 'topic', {durable: false} as BrokerExchangeOptions);
-    let q = broker.addQueue('testQ', {durable: true} as BrokerQueueOptions);
-    broker.init();
+    broker.addExchange('testX', 'topic', {durable: false} as BrokerExchangeOptions);
+    broker.addQueue('testQ', {durable: true} as BrokerQueueOptions);
+    broker.addBinding('testX', 'testQ', 'tsemach.#');
+    broker.addConsume('testQ', testCB.bind(this));
 
-    let ison = await broker.channel.checkQueue('testQ');
-
-    logger.info('ison = ' + JSON.stringify(ison));
-    expect(ison.queue).to.equal('testQ');
+    await broker.send('testX', 'tsemach.test', 'this is a test');
   });
 
 });

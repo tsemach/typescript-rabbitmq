@@ -62,14 +62,10 @@ describe('Broker Queue Test', () => {
 
     expect(broker.conn).to.not.equal(null);
 
-    broker.addExchange('test', 'topic', {durable: false} as BrokerExchangeOptions);
-    let q = broker.addQueue('testQ', {durable: true} as BrokerQueueOptions);
+    broker.addExchange('testX', 'topic', {durable: false} as BrokerExchangeOptions);
+    broker.addQueue('testQ', {durable: true} as BrokerQueueOptions);
+    broker.addBinding('testX', 'testQ', 'tsemach.#');
     broker.init();
-
-    let ison = await broker.channel.checkQueue('testQ');
-
-    logger.info('ison = ' + JSON.stringify(ison));
-    expect(ison.queue).to.equal('testQ');
   });
 
 });

@@ -164,15 +164,15 @@ export class Broker {
     }
   }
 
-  async addExchange(name: string, type: BrokerExchangeType, options: BrokerExchangeOptions) {
+  addExchange(name: string, type: BrokerExchangeType, options: BrokerExchangeOptions) {
     this.config.exchanges.push({name, type, options});
   }
 
-  async addQueue(name: string, options: BrokerQueueOptions) {
-    this.config.queues.push(name, options);
+  addQueue(name: string, options: BrokerQueueOptions) {
+    this.config.queues.push({name, options});
   }
 
-  async addBinding(exchange, target, keys) {
+  addBinding(exchange, target, keys) {
     this.config.binding.push({exchange: exchange, target: target, keys: keys});
   }
 

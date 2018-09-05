@@ -67,7 +67,8 @@ describe('Broker Exchange Test', () => {
     await broker.connect();
 
     expect(broker.conn).to.not.equal(null);
-    broker.addExchange('test', 'topic', {durable: false} as BrokerExchangeOptions);
+    await broker.addExchange('test', 'topic', {durable: false} as BrokerExchangeOptions);
+    await broker.init();
     try {
       let isok;
       isok = await broker.channel.checkExchange('test');
