@@ -21,7 +21,7 @@ See below about the configuration
 
 This will connect to the rabbit server where the host:port defined in the config.
 
-##**Define Queues Callbacks**
+## **Define Queues Callbacks**
 Call to **addConsume** method to add queue callback, for example **`broker.addConsume("work.tasks.queue", (msg) => {..});`**
 
 #####Example of using the broker as a member of user class
@@ -92,6 +92,63 @@ let config: any = {
 - **`exchanges`** define the exchanges you want to use
 - **`queues`** define the queues available 
 - **`binding`** the binging of queues with exchanges. 
+
+## Broker Exchange, Queue API  
+
+### **`broker::addExchange`** 
+Add a specific exchange.
+
+#### arguments
+- *name* : [string] - the name of the exchange.
+- *type* : [BrokerExchangeType] - one of 'fanout' | 'direct' | 'topic';
+- *options* : [BrokerExchangeOptions] - exchange options, see broker_options.ts.
+
+#### usage
+
+````typescript
+let broker = new Broker(config);
+await broker.connect();
+
+await broker.addExchange('test', 'topic', {durable: false} as BrokerExchangeOptions);
+await broker.init();
+````
+
+### **`broker::addQueue`** 
+Add a specific queue.
+
+#### arguments
+- *name* : [string] - the name of the exchange.
+- *type* : [BrokerExchangeType] - one of 'fanout' | 'direct' | 'topic';
+- *options* : [BrokerExchangeOptions] - exchange options, see broker_options.ts.
+
+#### usage
+
+````typescript
+let broker = new Broker(config);
+await broker.connect();
+
+broker.addQueue('testQ', {durable: true} as BrokerQueueOptions);
+broker.init();
+````
+
+### **`broker::bindQueue`** 
+Bind an exchange to queue with a route key.
+
+#### arguments
+- *exchange* : [string] - the name of the exchange.
+- *queue* : [string] -name of a queue to bind to;
+- *route* : [string] - the route key string.
+
+#### usage
+
+````typescript
+let broker = new Broker(config);
+await broker.connect();
+    
+broker.addBinding('testX', 'testQ', 'tsemach.#');
+broker.init();
+````
+
 
 
 
