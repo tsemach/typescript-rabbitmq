@@ -190,7 +190,6 @@ export class Broker {
       }
     };
     options = options === null ? _options : options;
-
     this.ch.publish(ex, key, Buffer.from(msg), options);
   }
 }

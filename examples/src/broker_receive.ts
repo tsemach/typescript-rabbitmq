@@ -1,7 +1,6 @@
 
 import { appRoot } from 'app-root-path';
 import Broker from 'typescript-rabbitmq';
-//import { Broker } from '../../src/broker/broker';
 
 /**
  * @description this module run the broker as a Recevier. It define a configuration object listen to two queues,
@@ -56,11 +55,6 @@ class Receiver {
   constructor() {
     this.ison = false;
     this.broker = new Broker(config);
-
-    // await broker.connect();
-    //
-    // this.broker.addConsume("work.tasks.queue", this.taskCB.bind(this));
-    // this.broker.addConsume("work.reply.queue", this.replyCB.bind(this));
   }
 
   async init() {

@@ -10,6 +10,8 @@ import {BrokerExchangeOptions, BrokerQueueOptions} from "../../src";
 
 describe('Broker Consume Test', () => {
 
+  process.env.QUEUE_USERNAME = 'guest';
+  process.env.QUEUE_PASSWORD = 'guest';
   process.env.QUEUE_HOST = 'localhost';
   process.env.QUEUE_PORT = '5672';
 
@@ -51,13 +53,14 @@ describe('Broker Consume Test', () => {
   /**
    */
 
-  it('check broker add consume', async () => {
+  it('check broker add consume', async (done) => {
 
     async function testCB(msg) {
       msg.content = msg.content.toString();
       logger.info('[testCB] msg = ' + JSON.stringify(msg, undefined, 2));
       expect(msg.content).to.be.equal('this is a test');
       logger.info('[testCB] end running consume test');
+      done();
     }
 
     console.log('host on: ' + process.env.QUEUE_HOST + ':' + process.env.QUEUE_PORT);
