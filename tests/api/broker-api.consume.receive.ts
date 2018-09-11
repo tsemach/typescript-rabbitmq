@@ -62,14 +62,11 @@ class Receiver {
   async init() {
     await this.broker.connect();
 
-    await this.broker.addExchange('testX', 'topic', {publishTimeout: 1000, persistent: true, durable: false} as BrokerExchangeOptions);
-    await this.broker.addQueue('tasksQ', {limit: 1000, queueLimit: 1000} as BrokerQueueOptions);
-    await this.broker.addQueue('replyQ', {limit: 1000, queueLimit: 1000} as BrokerQueueOptions);
-    await this.broker.addBinding('testX', 'tasksQ', 'tsemach.tasks');
-    await this.broker.addBinding('testX', 'replyQ', 'tsemach.reply');
+    await this.broker.addExchange('service-a.exchange', 'topic', {publishTimeout: 1000, persistent: true, durable: false} as BrokerExchangeOptions);
+    await this.broker.addQueue('service-a.queue', {limit: 1000, queueLimit: 1000} as BrokerQueueOptions);
+    await this.broker.addBinding('service-a.exchange', 'service-a.queue', 'tsemach.component');
 
-    this.broker.addConsume("tasksQ", this.tasksCB.bind(this), false);
-    this.broker.addConsume("replyQ", this.replyCB.bind(this), false);
+    this.broker.addConsume("service-a.queue", this.tasksCB.bind(this), false);
 
     return this;
   }

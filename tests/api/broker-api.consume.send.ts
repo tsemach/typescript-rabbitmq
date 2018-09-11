@@ -44,7 +44,7 @@ class Sender {
   async init() {
     await this.broker.connect();
 
-    this.broker.addExchange('testX', 'topic', {publishTimeout: 1000, persistent: true, durable: false} as BrokerExchangeOptions);
+    this.broker.addExchange('service-a.exchange', 'topic', {publishTimeout: 1000, persistent: true, durable: false} as BrokerExchangeOptions);
 
     return this;
   }
@@ -56,8 +56,7 @@ async function run() {
   await sender.init();
 
   console.log("sender: going to send message ..");
-  await sender.broker.send('testX', 'tsemach.tasks', 'this is a tasks');
-  await sender.broker.send('testX', 'tsemach.reply', 'this is a reply');
+  await sender.broker.send('service-a.exchange', 'tsemach.component', 'this is a tasks');
 }
 
 run();
