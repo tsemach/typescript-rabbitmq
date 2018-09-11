@@ -75,6 +75,10 @@ export class Broker {
     return this.ch;
   }
 
+  close() {
+    this.ch.close();
+  }
+
   async connect() {
     if (this._conn !== null) {
       logger.info("[connect] looks like broker is already connected, skip");
@@ -198,8 +202,12 @@ export class Broker {
       }
     };
     options = options === null ? _options : options;
-    console.log("[Broker:send] messageId = " + options.headers.messageId);
-    this.ch.publish(ex, key, Buffer.from(msg), options);
+
+    let msgToSend = msg;
+    if (typeof msg === 'object') {
+      msgToSend = JSON.stringify(msg);
+    }
+    this.ch.publish(ex, key, Buffer.from(msgToSend), options);    
   }
 }
 
