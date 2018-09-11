@@ -1,9 +1,7 @@
 
-
-import { BrokerExchangeOptions, BrokerQueueOptions } from '../../src';
-
+import { appRoot } from 'app-root-path';
 //import Broker from 'typescript-rabbitmq';
-import { Broker } from '../../src';
+import { Broker } from '../src';
 
 /**
  * @description this module run the broker as a Recevier. It define a configuration object listen to two queues,
@@ -20,34 +18,34 @@ import { Broker } from '../../src';
 declare const process;
 
 let config: any = {
-  connection: {
-    user: process.env.QUEUE_USERNAME,
-    pass: process.env.QUEUE_PASSWORD,
-    host: process.env.QUEUE_SERVER || 'localhost',
-    port: process.env.QUEUE_PORT || '5672',
-    timeout: 2000,
-    name: "rabbitmq"
-  },
-  exchanges: [
-    {name: "work.tasks.exchange", type: "topic", options: {publishTimeout: 1000, persistent: true, durable: false}},
-    {name: "textX", type: "topic", options: {publishTimeout: 1000, persistent: true, durable: false}}
-  ],
-  queues: [
-    {name: "work.tasks.queue", options: {limit: 1000, queueLimit: 1000}},
-    {name: "testQ", options: {limit: 1000, queueLimit: 1000}}
-  ],
-  binding: [
-    {exchange: "work.tasks.exchange", target: "work.tasks.queue", keys: "loopback.#"},
-    {exchange: "testX", target: "testQ", keys: "tsemach.#"}
-  ],
-  logging: {
-    adapters: {
-      stdOut: {
-        level: 3,
-        bailIfDebug: true
-      }
+    connection: {
+        user: process.env.QUEUE_USERNAME,
+        pass: process.env.QUEUE_PASSWORD,
+        host: process.env.QUEUE_SERVER || 'localhost',
+        port: process.env.QUEUE_PORT || '5672',
+        timeout: 2000,
+        name: "rabbitmq"
+    },
+    exchanges: [
+        {name: "work.tasks.exchange", type: "topic", options: {publishTimeout: 1000, persistent: true, durable: false}},
+        {name: "work.reply.exchange", type: "topic", options: {publishTimeout: 1000, persistent: true, durable: false}}
+    ],
+    queues: [
+        {name: "work.tasks.queue", options: {limit: 1000, queueLimit: 1000}},
+        {name: "work.reply.queue", options: {limit: 1000, queueLimit: 1000}}
+    ],
+    binding: [
+        {exchange: "work.tasks.exchange", target: "work.tasks.queue", keys: "loopback.#"},
+        {exchange: "work.reply.exchange", target: "work.reply.queue", keys: "tsemach.#"}
+    ],
+    logging: {
+        adapters: {
+            stdOut: {
+                level: 3,
+                bailIfDebug: true
+            }
+        }
     }
-  }
 };
 
 class Receiver {
@@ -62,14 +60,8 @@ class Receiver {
   async init() {
     await this.broker.connect();
 
-    await this.broker.addExchange('testX', 'topic', {publishTimeout: 1000, persistent: true, durable: false} as BrokerExchangeOptions);
-    await this.broker.addQueue('tasksQ', {limit: 1000, queueLimit: 1000} as BrokerQueueOptions);
-    await this.broker.addQueue('replyQ', {limit: 1000, queueLimit: 1000} as BrokerQueueOptions);
-    await this.broker.addBinding('testX', 'tasksQ', 'tsemach.tasks');
-    await this.broker.addBinding('testX', 'replyQ', 'tsemach.reply');
-
-    this.broker.addConsume("tasksQ", this.tasksCB.bind(this), false);
-    this.broker.addConsume("replyQ", this.replyCB.bind(this), false);
+    this.broker.addConsume("work.tasks.queue", this.tasksCB.bind(this));
+    this.broker.addConsume("work.reply.queue", this.replyCB.bind(this));
 
     return this;
   }

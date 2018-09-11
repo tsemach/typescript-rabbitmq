@@ -56,7 +56,8 @@ async function run() {
   await sender.init();
 
   console.log("sender: going to send message ..");
-  await sender.broker.send('testX', 'tsemach.test', 'this is a test');
+  await sender.broker.send('testX', 'tsemach.tasks', 'this is a tasks');
+  await sender.broker.send('testX', 'tsemach.reply', 'this is a reply');
 }
 
 run();

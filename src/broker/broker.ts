@@ -82,11 +82,11 @@ export class Broker {
       return;
     }
 
-    if (!this.config.connection.host) {
+    if ( ! this.config.connection.host ) {
       throw "rabbitMQ host name is undefined! unable to connect";
     }
 
-    if (!this.config.connection.port) {
+    if ( ! this.config.connection.port ) {
       this.config.connection.port = 5672;
     }
 
@@ -118,9 +118,14 @@ export class Broker {
     }
   }
 
-  async addConsume(queue, cb) {
+  async addConsume(queue, cb, init = true) {
     this.consumes.set(queue, cb);
-    await this.init();
+    if (init) {
+      await this.init();
+
+      return;
+    }
+    await this.ch.consume(queue, cb, {noAck: !this.noAck});
   }
 
   private async initQueueCB(q_created) {
@@ -130,7 +135,7 @@ export class Broker {
     });
 
     for (let b of needed_binding) {
-      logger.info("initQueueCB: bining - " + JSON.stringify(b));
+      logger.info("initQueueCB: binding - " + JSON.stringify(b));
 
       await this.ch.bindQueue(b.target, b.exchange, b.keys);
 
@@ -164,16 +169,19 @@ export class Broker {
     }
   }
 
-  addExchange(name: string, type: BrokerExchangeType, options: BrokerExchangeOptions) {
-    this.config.exchanges.push({name, type, options});
+  async addExchange(name: string, type: BrokerExchangeType, options: BrokerExchangeOptions) {
+    await this.ch.assertExchange(name, type, options)
+    //this.config.exchanges.push({name, type, options});
   }
 
-  addQueue(name: string, options: BrokerQueueOptions) {
-    this.config.queues.push({name, options});
+  async addQueue(name: string, options: BrokerQueueOptions) {
+    await await this.ch.assertQueue(name, options);
+    //this.config.queues.push({name, options});
   }
 
-  addBinding(exchange, target, keys) {
-    this.config.binding.push({exchange: exchange, target: target, keys: keys});
+  async addBinding(exchange, target, keys) {
+    await this.ch.bindQueue(target, exchange, keys);
+    //this.config.binding.push({exchange: exchange, target: target, keys: keys});
   }
 
   send(ex, key, msg, options = null, noAck = true) {
@@ -190,6 +198,7 @@ export class Broker {
       }
     };
     options = options === null ? _options : options;
+    console.log("[Broker:send] messageId = " + options.headers.messageId);
     this.ch.publish(ex, key, Buffer.from(msg), options);
   }
 }

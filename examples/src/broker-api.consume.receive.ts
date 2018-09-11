@@ -1,6 +1,7 @@
 
 import { BrokerExchangeOptions, BrokerQueueOptions } from 'typescript-rabbitmq';
-import Broker from 'typescript-rabbitmq';
+//import Broker from 'typescript-rabbitmq';
+import { Broker } from '../../src/broker/broker';
 
 process.env.QUEUE_USERNAME = 'guest';
 process.env.QUEUE_PASSWORD = 'guest';
@@ -47,7 +48,7 @@ class Receiver {
     this.broker.addExchange('testX', 'topic', {publishTimeout: 1000, persistent: true, durable: false} as BrokerExchangeOptions);
     this.broker.addQueue('testQ', {limit: 1000, queueLimit: 1000} as BrokerQueueOptions);
     this.broker.addBinding('testX', 'testQ', 'tsemach.#');
-    this.broker.addConsume('testQ', this.tasksCB.bind(this));
+    await this.broker.addConsume('testQ', this.tasksCB.bind(this));
 
     return this;
   }
